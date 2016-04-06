@@ -1,0 +1,21 @@
+{
+  "name": "nggen",
+  "version": "0.0.7",
+  "description": "Angular project generator",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Angular",
+    "generator"
+  ],
+  "author": "jyoti prakash",
+  "license": "ISC",
+  "bin": {
+    "nggen": "nggen.js"
+  },
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "shelljs": "^0.6.0"
+  }
+}
