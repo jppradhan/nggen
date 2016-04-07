@@ -8,6 +8,7 @@ var chalk = require('chalk');
 var ctx = new chalk.constructor({enabled: true, supportsColor: true});
 var fs = require('fs');
 var path = require('path');
+var inquirer = require("inquirer");
 /**
  * [extend description]
  * @param  {[Object]} obj [description]
@@ -69,7 +70,9 @@ var Defaults = {
 		fonts: 'fonts/',
 		images: 'images/',
 	},
-	_files: ['index.html', 'gulpfile.js', 'package.json', '.gitignore', 'favicon.ico', '.jscsrc']
+	_files: ['index.html', 'gulpfile.js', 'package.json', '.gitignore', 'favicon.ico', '.jscsrc', 'bower.json'],
+	_libs: [], 
+	_tmpl: 'templates/'
 };
 
 
@@ -134,6 +137,27 @@ Nggen.prototype.create = function(arg) {
 	 */
 	for (var i = 0; i < arg._files.length; i += 1) {
 		touch(arg._files[i]);
+		/**
+		 * [Read Write basic files]
+		 * @param  {[string path]} err   [this is the path argument]
+		 * @param  {[string]} data) {			if       (!err) {				var filetext [after read file data]
+		 * @return {[string]}       [writing to file]
+		 */
+		(function(index){
+			read(__dirname + '/' + arg._tmpl + '_' + arg._files[index] , function(err, data) {
+				if (!err) {
+					var filetext = data.toString();
+					write(arg._files[index], filetext, function(err) {
+						if(err) {
+							console.log(chalk.white.bgRed.bold('Error in Writing file:' + err));
+						}
+					});
+				} else {
+					console.log(chalk.white.bgRed.bold('Error while reading file. Reinstall the plugin or check your permission' + err ));
+				}
+			});
+		})(i);
+		
 	}
 
 	console.log(chalk.white.bgGreen.bold('app created'));
@@ -222,12 +246,81 @@ Nggen.prototype.route = function(arg) {
 	touch(path + arg.route.name + '.html');
 	console.log(chalk.white.bgGreen.bold('route created'));
 }
-/**
- * [nggen new instance for Nggen class]
- * @type {Nggen}
- */
-var nggen = new Nggen(args);
-nggen[nggen._defaults.command](nggen._defaults);
 
-exit(1);
+
+/**
+ * [questions description]
+ * @type {Array}
+ */
+var questions = [
+	{
+		type: 'rawlist',
+		name: 'css',
+		choices: ['Bootstrap', 'Materilize', 'Zurb'],
+		message: 'Which css framework you want to use ?',
+		filter: function (val) {
+	      	return val.toLowerCase();
+	    }
+	},
+    {
+		type: 'rawlist',
+		name: 'js',
+		choices: ['jQuery', 'Zepto'],
+		message: 'Which Javascript lib you want to use ?',
+		filter: function (val) {
+	      	return val.toLowerCase();
+	    }
+	}
+];
+
+/**
+ * [Promt the user to create application]
+ * @param  {[string]} ) {}          [description]
+ * @return {[string]}   [description]
+ */
+inquirer.prompt(questions, function(res) {
+	for(var i in res) {
+		if (typeof res == 'string') {
+			Defaults._libs.push(res[i]);
+		}
+		
+	}
+	
+	/**
+	 * [nggen new instance for Nggen class]
+	 * @type {Nggen}
+	 */
+	var nggen = new Nggen(args);
+	nggen[nggen._defaults.command](nggen._defaults);
+	
+});
+
+
+/**
+ * [read description]
+ * @param  {[String]}   path     [description]
+ * @param  {Function} callback [description]
+ * @return {[string]}            [description]
+ */
+function read(path, callback) {
+	fs.readFile(path, 'utf8', function (err, data) {
+	  if (callback) {
+	  	callback(err, data);
+	  }
+	});
+}
+
+/**
+ * [write description]
+ * @param  {[String]}   path     [description]
+ * @param  {Function} callback [description]
+ * @return {[string]}            [description]
+ */
+function write(path, text, callback) {
+	fs.writeFile(path, text, function(err) {
+		if (callback) {
+			callback(err);
+		}
+	});
+}
 

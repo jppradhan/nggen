@@ -14,21 +14,27 @@ Create Project Folder:
 3. `nggen create [your angular app name]`
 
 Create Controller:
+
 `nggen controller [controller name]`
 
 Create Directive:
+
 `nggen directive [directive name]`
 
 Create Services:
+
 `nggen service [service name]`
 
 Create filter:
+
 `nggen filter [filter name]`
 
 Create route:
+
 `nggen route [route name]`
 
 Create factory:
+
 `nggen factory [factory name]`
 
 ## License:
@@ -38,4 +44,5 @@ Open Source
 ## Author:
 
 Name: Jyoti Prakash
+
 Email: er.jppradhan@gmail.com
