@@ -168,6 +168,8 @@ Nggen.prototype.create = function(arg) {
         this.service(arg);
         this.filter(arg);
         this.route(arg);
+
+        this.writeDefaultFiles();
     }
     /**
      * [controller description]
@@ -247,6 +249,30 @@ Nggen.prototype.route = function(arg) {
     touch(path + arg.route.name + '.html');
     console.log(chalk.white.bgGreen.bold('route created'));
 }
+/**
+ * [writeDefaultFiles write index.html, gulpfile, app.js, bower file]
+ * @return {[Files]} [description]
+ */
+Nggen.prototype.writeDefaultFiles = function() {
+    var path = this._defaults.basePath;
+    var _self = this;
+    /*
+     * Writing Index.html file
+     */
+    read('index.html', function(err, data) {
+        var indexTemplate = data.toString();
+        var tempStr = '';
+        for (var i = 0;i < _self._defaults._libs.length;i += 1) {
+            tempStr = tempStr + '<script src="' + _self._defaults._libs[i] + '"> </script>';
+        }
+
+        indexTemplate = indexTemplate.replace('<!--vendors-->',tempStr);
+        console.log(indexTemplate);
+        write('index.html', indexTemplate, function(err) {
+
+        });
+    });
+}
 
 
 /**
@@ -278,11 +304,13 @@ var questions = [{
  */
 inquirer.prompt(questions, function(res) {
     for (var i in res) {
-        if (typeof res == 'string') {
+        if (typeof res[i] == 'string') {
             Defaults._libs.push(res[i]);
         }
 
     }
+
+    console.log(chalk.blue.bgWhite.bold(Defaults._libs));
 
     /**
      * [nggen new instance for Nggen class]
